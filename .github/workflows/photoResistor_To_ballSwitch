@@ -1,0 +1,48 @@
+const int ledPin = 13;
+const int buzzerPin = 8;
+const int ldrPin = A0;
+
+unsigned long previousMillis = 0;
+const long interval = 20000; // 20 seconds (in milliseconds)
+int beepCount = 0; // Initialize beep count
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(ledPin, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
+  pinMode(ldrPin, INPUT);
+}
+
+void loop() {
+  int ldrStatus = analogRead(ldrPin); // Read the state of the LDR value
+
+  if (ldrStatus < 400) { // Adjust this threshold as needed
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillis >= interval) {
+      previousMillis = currentMillis; // Update the previousMillis
+
+      // Beep the buzzer four times
+      for (int i = 0; i < 4; i++) {
+        tone(buzzerPin, 1000); // Adjust the frequency as desired
+        digitalWrite(ledPin, HIGH);
+        delay(100); // Beep duration
+        noTone(buzzerPin);
+        digitalWrite(ledPin, LOW);
+        delay(100); // Delay between beeps
+      }
+
+      beepCount++; // Increment beep count
+      Serial.print("Buzzer beeped ");
+      Serial.print(beepCount);
+      Serial.println(" times after 20 seconds!");
+    }
+  } else {
+    noTone(buzzerPin);
+    digitalWrite(ledPin, LOW);
+    beepCount = 0; // Reset beep count
+    Serial.println("No alarm detected.");
+  }
+
+  delay(100); // Delay for stability
+}
